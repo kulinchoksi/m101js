@@ -1,0 +1,25 @@
+version: "2"
+
+services:
+  mongo-db:
+    build: ./mongo/.
+    image: m101js_mongodb:1.0
+    container_name: m101js-mongodb
+    volumes:
+     - ./mongo/data:/data
+    networks:
+      - back-tier
+
+  nodejs-app:
+    build: ./nodejs/.
+    image: m101js_nodejs:1.0
+    container_name: m101js-nodejs
+    volumes:
+      - ./nodejs:/usr/src/app
+    ports:
+      - "8000:8000"
+    networks:
+      - back-tier
+  
+networks:
+  back-tier:
