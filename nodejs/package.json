@@ -1,7 +1,7 @@
 {
-  "name": "intro_to_npm",
-  "version": "0.0.1",
-  "description": "npm introduction",
+  "name": "m101js",
+  "version": "1.0.0",
+  "description": "MongoDb exercise with NodeJs",
   "author": "Kulin Choksi <kulinchoksi@gmail.com>",
   "main": "server.js",
   "scripts": {
