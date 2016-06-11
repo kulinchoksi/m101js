@@ -4,7 +4,7 @@ const express = require('express'),
 	  engines = require('consolidate');
 
 // constants
-const PORT = 8080;
+const PORT = process.env.PORT || 8000;
 
 // app
 const app = express();

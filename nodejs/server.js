@@ -1,6 +1,7 @@
 'use strict';
 
 const express = require('express');
+// const proxyServer = require('./my_modules/proxy_server');
 
 // constants
 const PORT = process.env.PORT || 8000;
@@ -9,6 +10,10 @@ const PORT = process.env.PORT || 8000;
 const app = express();
 
 app.get('/', function(req, res) {
+	// proxy the request
+	// console.log(proxyServer.httpProxyServer);
+  	// proxyServer.httpProxyServer.web(req, res, { target: 'http://localhost:8000' });
+
 	res.send("Hello mongo nodes!\n");
 });
 

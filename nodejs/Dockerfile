@@ -13,4 +13,6 @@ RUN npm config set registry http://registry.npmjs.org
 ENV PORT 8000
 EXPOSE 8000
 
-CMD ["npm", "start"]
+# CMD ["npm", "start"]
+ENTRYPOINT ["/bin/bash"]
+CMD ["-c" , "while true; do echo ...; sleep 1; done"]
