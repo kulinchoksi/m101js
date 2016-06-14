@@ -74,7 +74,7 @@ for (var i=0; i<allOptions.length; i++) {
 
 function queryMongoDB(query, queryNum) {
 
-    MongoClient.connect('mongodb://localhost:27017/crunchbase', function(err, db) {
+    MongoClient.connect('mongodb://mongo-db:27017/crunchbase', function(err, db) {
         
         assert.equal(err, null);
         console.log("Successfully connected to MongoDB for query: " + queryNum);
@@ -110,8 +110,9 @@ function queryDocument(options) {
 
     console.log(options);
     
+    /* TODO: Complete this statement to match the regular expression "social-networking" */
     var query = {
-        "tag_list": /* TODO: Complete this statement to match the regular expression "social-networking" */        
+        "tag_list": {"$regex": "social-networking", "$options": "i"}
     };
 
     if (("firstYear" in options) && ("lastYear" in options)) {
@@ -120,6 +121,12 @@ function queryDocument(options) {
            appear in the options object, we will match documents that have a value for 
            the "founded_year" field of companies documents in the correct range. 
         */
+        
+        query.founded_year = {
+          "$gte": options.firstYear,
+          "$lte": options.lastYear
+        };
+        
     } else if ("firstYear" in options) {
         query.founded_year = { "$gte": options.firstYear };
     } else if ("lastYear" in options) {
@@ -133,6 +140,8 @@ function queryDocument(options) {
            is a nested document containing fields that describe a corporate office. Each office
            document contains a "city" field. A company may have multiple corporate offices. 
         */
+        
+        query["offices.city"] = options.city;
     }
         
     return query;
