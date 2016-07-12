@@ -53,18 +53,49 @@ function ItemDAO(database) {
         */
 
         var categories = [];
+        var totalCategories = 0;
+        /*
         var category = {
             _id: "All",
             num: 9999
         };
 
-        categories.push(category)
+        categories.push(category);
+        */
 
         // TODO-lab1A Replace all code above (in this method).
 
         // TODO Include the following line in the appropriate
         // place within your code to pass the categories array to the
         // callback.
+
+        var cursor = this.db.collection('item').aggregate([
+            { $group: {
+                _id: "$category",
+                num: { $sum: 1 }
+            } },
+            { $sort: { _id: 1 } }
+        ]);
+
+        cursor.forEach(
+            function(category) {
+                totalCategories += category.num;
+                // console.log("category: " + JSON.stringify(category));
+                // console.log("totalCategories: " + totalCategories);
+                categories.push(category);
+            },
+            function(err) {
+                assert.equal(err, null);
+
+                // add 'All' category in beginning of array
+                categories.unshift({
+                    _id: "All",
+                    num: totalCategories
+                });
+                console.log("categories(" + totalCategories + "): " + JSON.stringify(categories));
+            }
+        );        
+
         callback(categories);
     }
 
@@ -94,17 +125,47 @@ function ItemDAO(database) {
          *
          */
 
-        var pageItem = this.createDummyItem();
         var pageItems = [];
+        /*
+        var pageItem = this.createDummyItem();
         for (var i=0; i<5; i++) {
             pageItems.push(pageItem);
         }
+        */
+        
+        var itemProperties = {"title": 1, "description": 1, "img_url": 1, "slogan": 1};
+        var itemsToskip = page * itemsPerPage;
+        var categoryFilter = {};
+
+        if (category != 'All') {
+            categoryFilter = {"category": category};
+         }
+
+        
 
         // TODO-lab1B Replace all code above (in this method).
 
         // TODO Include the following line in the appropriate
         // place within your code to pass the items for the selected page
         // to the callback.
+        var cursor = this.db.collection('item')
+                        .find(categoryFilter, itemProperties)
+                        .sort({"_id": 1})
+                        .skip(itemsToskip)
+                        .limit(itemsPerPage);
+
+        cursor.forEach(
+            function(pageItem) {
+                // console.log("pageItem: " + JSON.stringify(pageItem));
+                pageItems.push(pageItem);
+            },
+            function(err) {
+                assert.equal(err, null);
+                console.log("Query was:" + JSON.stringify(categoryFilter));
+                console.log("Matching items: " + pageItems.length + "; itemsToskip: " + itemsToskip + "; itemsPerPage: " + itemsPerPage);
+            }
+        );
+
         callback(pageItems);
     }
 
@@ -113,6 +174,7 @@ function ItemDAO(database) {
         "use strict";
 
         var numItems = 0;
+        var categoryFilter = {};
 
         /*
          * TODO-lab1C:
@@ -131,7 +193,13 @@ function ItemDAO(database) {
 
          // TODO Include the following line in the appropriate
          // place within your code to pass the count to the callback.
-        callback(numItems);
+         if (category != 'All') {
+            categoryFilter = {"category": category};
+         }
+
+         this.db.collection('item').count(categoryFilter, function(err, numItems) {
+            callback(numItems);
+         });
     }
 
 

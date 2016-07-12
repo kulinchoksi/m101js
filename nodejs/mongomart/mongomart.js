@@ -51,7 +51,7 @@ var ITEMS_PER_PAGE = 5;
 // Hardcoded USERID for use with the shopping cart portion
 var USERID = "558098a65133816958968d88";
 
-MongoClient.connect('mongodb://localhost:27017/mongomart', function(err, db) {
+MongoClient.connect('mongodb://mongo-db:27017/mongomart', function(err, db) {
     "use strict";
 
     assert.equal(null, err);
@@ -70,11 +70,11 @@ MongoClient.connect('mongodb://localhost:27017/mongomart', function(err, db) {
         var category = req.query.category ? req.query.category : "All";
 
         items.getCategories(function(categories) {
-            
+            console.log("categories: " + JSON.stringify(categories));
             items.getItems(category, page, ITEMS_PER_PAGE, function(pageItems) {
-
+            	// console.log("pageItems: " + JSON.stringify(pageItems));
                 items.getNumItems(category, function(itemCount) {
-
+					// console.log("count: " + itemCount);
                     var numPages = 0;
                     if (itemCount > ITEMS_PER_PAGE) {
                         numPages = Math.ceil(itemCount / ITEMS_PER_PAGE);
@@ -284,7 +284,7 @@ MongoClient.connect('mongodb://localhost:27017/mongomart', function(err, db) {
     app.use('/', router);
 
     // Start the server listening
-    var server = app.listen(3000, function() {
+    var server = app.listen(8000, function() {
         var port = server.address().port;
         console.log('Mongomart server listening on port %s.', port);
     });
