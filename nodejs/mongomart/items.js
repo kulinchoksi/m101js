@@ -230,17 +230,57 @@ function ItemDAO(database) {
          *
          */
 
-        var item = this.createDummyItem();
+        /**
+         * db.item.createIndex({
+         *    "title": "text",
+         *    "slogan": "text",
+         *    "description": "text"
+         * });
+         *
+         */
+        
         var items = [];
+        var itemProperties = {"title": 1, "description": 1, "img_url": 1, "slogan": 1};
+        var itemsToskip = page * itemsPerPage;
+        var searchQuery = {
+            $text: {
+                $search: query
+            }
+        };
+        
+        /*
+        var item = this.createDummyItem();
         for (var i=0; i<5; i++) {
             items.push(item);
         }
+        */
 
         // TODO-lab2A Replace all code above (in this method).
 
         // TODO Include the following line in the appropriate
         // place within your code to pass the items for the selected page
         // of search results to the callback.
+
+        var cursor = this.db.collection('item')
+                        .find(searchQuery, itemProperties)
+                        .sort({"_id": 1})
+                        .skip(itemsToskip)
+                        .limit(itemsPerPage);
+        
+        // db.item.find({ $text: { $search: "leaf" } }, {"title": 1, "description": 1, "img_url": 1, "slogan": 1} ).sort({"_id": 1}).skip(0).limit(5);
+
+        cursor.forEach(
+            function(searchItem) {
+                // console.log("searchItem: " + JSON.stringify(searchItem));
+                items.push(searchItem);
+            },
+            function(err) {
+                assert.equal(err, null);
+                console.log("Query was:" + JSON.stringify(searchQuery));
+                console.log("Matching items: " + items.length + "; itemsToskip: " + itemsToskip + "; itemsPerPage: " + itemsPerPage);
+            }
+        );
+
         callback(items);
     }
 
@@ -249,6 +289,11 @@ function ItemDAO(database) {
         "use strict";
 
         var numItems = 0;
+        var searchQuery = {
+            $text: {
+                $search: query
+            }
+        };
 
         /*
         * TODO-lab2B
@@ -262,8 +307,9 @@ function ItemDAO(database) {
         * a SINGLE text index on title, slogan, and description. You should
         * simply do this in the mongo shell.
         */
-
-        callback(numItems);
+        this.db.collection('item').count(searchQuery, function(err, numItems) {
+            callback(numItems);
+         });
     }
 
 
