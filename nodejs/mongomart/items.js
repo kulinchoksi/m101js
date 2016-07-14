@@ -326,14 +326,21 @@ function ItemDAO(database) {
          *
          */
 
-        var item = this.createDummyItem();
+        // var item = this.createDummyItem();
 
         // TODO-lab3 Replace all code above (in this method).
 
         // TODO Include the following line in the appropriate
         // place within your code to pass the matching item
         // to the callback.
-        callback(item);
+
+        this.db.collection('item').findOne(
+            { "_id" : itemId },
+            { "title": 1, "description": 1, "img_url": 1, "slogan": 1, "category": 1, "reviews": 1 },
+            function(err, item) {
+                assert.equal(null, err);
+                callback(item);
+            });
     }
 
 
