@@ -178,6 +178,7 @@ MongoClient.connect('mongodb://mongo-db:27017/mongomart', function(err, db) {
         var stars = parseInt(req.body.stars);
 
         items.addReview(itemId, review, name, stars, function(itemDoc) {
+        	console.log("itemDoc: " + itemDoc);
             res.redirect("/item/" + itemId);
         });
     });

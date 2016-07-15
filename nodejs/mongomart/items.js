@@ -380,13 +380,35 @@ function ItemDAO(database) {
 
         // TODO replace the following two lines with your code that will
         // update the document with a new review.
+        // Update the document using an upsert operation, ensuring creation if it does not exist
+
+        // db.item.update({"_id": 7}, {$addToSet : {reviews: {"name":"Kulin", "comment": "test", "stars": 5, "date": 1455804825509}}});
+        this.db.collection("item").update(
+            {"_id":itemId},
+            {$addToSet : {reviews: reviewDoc}},
+            {upsert:true, w: 1},
+            function(err, result) {
+                assert.equal(null, err);
+                console.log("result: " + result);
+                // assert.equal(1, result.ok);
+
+                // Fetch the document that we modified and check if it got inserted correctly
+                this.db.collection("item").findOne(
+                    {"_id":itemId},
+                    function(err, itemDoc) {
+                        assert.equal(null, err);
+                        callback(itemDoc);
+                });
+            });
+        
+        /*
         var doc = this.createDummyItem();
         doc.reviews = [reviewDoc];
-
+        */
         // TODO Include the following line in the appropriate
         // place within your code to pass the updated doc to the
         // callback.
-        callback(doc);
+        
     }
 
 
