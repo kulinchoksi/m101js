@@ -359,6 +359,8 @@ function ItemDAO(database) {
     this.addReview = function(itemId, comment, name, stars, callback) {
         "use strict";
 
+        var db = this.db;
+
         /*
          * TODO-lab4
          *
@@ -383,22 +385,17 @@ function ItemDAO(database) {
         // Update the document using an upsert operation, ensuring creation if it does not exist
 
         // db.item.update({"_id": 7}, {$addToSet : {reviews: {"name":"Kulin", "comment": "test", "stars": 5, "date": 1455804825509}}});
-        this.db.collection("item").update(
+        db.collection("item").update(
             {"_id":itemId},
             {$addToSet : {reviews: reviewDoc}},
             {upsert:true, w: 1},
             function(err, result) {
                 assert.equal(null, err);
                 console.log("result: " + result);
+                // console.log("this: " + this); // undefined
                 // assert.equal(1, result.ok);
 
-                // Fetch the document that we modified and check if it got inserted correctly
-                this.db.collection("item").findOne(
-                    {"_id":itemId},
-                    function(err, itemDoc) {
-                        assert.equal(null, err);
-                        callback(itemDoc);
-                });
+                getDocForCallback(itemId);
             });
         
         /*
@@ -408,7 +405,15 @@ function ItemDAO(database) {
         // TODO Include the following line in the appropriate
         // place within your code to pass the updated doc to the
         // callback.
-        
+        var getDocForCallback = function(itemId) {
+            // Fetch the document that we modified and check if it got inserted correctly
+            db.collection("item").findOne(
+                {"_id":itemId},
+                function(err, itemDoc) {
+                    assert.equal(null, err);
+                    callback(itemDoc);
+            });
+        }
     }
 
 
