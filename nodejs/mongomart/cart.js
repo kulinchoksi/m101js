@@ -92,7 +92,20 @@ function CartDAO(database) {
          *
          */
 
-        callback(null);
+        this.db.collection('cart').findOne(
+            {"userId": userId, "items": { $elemMatch: { "_id": itemId}}},
+            {"_id": 0, "items.$": 1},
+            function(err, items) {
+                var item = null;
+                assert.equal(null, err);
+                
+                if (items != null) {
+                    item = items.items[0];
+                }
+
+                callback(item);
+            }
+        );
 
         // TODO-lab6 Replace all code above (in this method).
     }

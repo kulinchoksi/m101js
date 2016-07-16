@@ -231,6 +231,7 @@ MongoClient.connect('mongodb://mongo-db:27017/mongomart', function(err, db) {
         };
 
         cart.itemInCart(userId, itemId, function(item) {
+        	console.log("itemInCart: " + item);
             if (item == null) {
                 items.getItem(itemId, function(item) {
                     item.quantity = 1;
