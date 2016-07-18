@@ -197,6 +197,7 @@ function CartDAO(database) {
         *
         */
 
+        /*
         var userCart = {
             userId: userId,
             items: []
@@ -205,9 +206,37 @@ function CartDAO(database) {
         dummyItem.quantity = quantity;
         userCart.items.push(dummyItem);
         callback(userCart);
+        */
+
+        // delete cart item
+        if (quantity == 0) {
+            this.db.collection("cart").updateOne(
+                { "userId": userId, "items._id": itemId },
+                { $pull: { items: { _id: itemId } } },
+                { multi: false },
+                function(err, result) {
+                    assert.equal(null, err);
+                    console.log("result: " + result);
+                }
+            );
+        } else {
+            // update quantity in cart item
+            this.db.collection("cart").updateOne(
+                {"userId": userId, "items._id": itemId},
+                { $set: { "items.$.quantity" : quantity} },
+                function(err, result) {
+                    assert.equal(null, err);
+                    console.log("result: " + result);
+                }
+            );
+        }
+
+        // return updated cart in callback
+        this.getCart(userId, function(updatedCart) {
+            callback(updatedCart);
+        });        
 
         // TODO-lab7 Replace all code above (in this method).
-
     }
 
     this.createDummyItem = function() {
